@@ -1,0 +1,39 @@
+<div class="add-product-form">
+  <h2>Ajouter un produit</h2>
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+    <label>
+      Nom :
+      <input type="text" formControlName="name" />
+      <span *ngIf="productForm.get('name')?.hasError('required') && productForm.get('name')?.touched">
+        Le nom est obligatoire.
+      </span>
+      <span *ngIf="productForm.get('name')?.hasError('minlength') && productForm.get('name')?.touched">
+        Le nom doit contenir au moins 3 caractères.
+      </span>
+    </label>
+
+    <label>
+      Prix :
+      <input type="number" formControlName="price" />
+      <span *ngIf="productForm.get('price')?.hasError('required') && productForm.get('price')?.touched">
+        Le prix est obligatoire.
+      </span>
+      <span *ngIf="productForm.get('price')?.hasError('min') && productForm.get('price')?.touched">
+        Le prix doit être supérieur ou égal à 1.
+      </span>
+    </label>
+
+    <label>
+      Description :
+      <textarea formControlName="description"></textarea>
+      <span *ngIf="productForm.get('description')?.hasError('required') && productForm.get('description')?.touched">
+        La description est obligatoire.
+      </span>
+      <span *ngIf="productForm.get('description')?.hasError('maxlength') && productForm.get('description')?.touched">
+        La description ne doit pas dépasser 200 caractères.
+      </span>
+    </label>
+
+    <button type="submit" [disabled]="productForm.invalid">Ajouter</button>
+  </form>
+</div>

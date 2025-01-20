@@ -1,0 +1,26 @@
+
+<h2>Listes des produits</h2>
+<table mat-table [dataSource]="products" class="mat-elevation-z8">
+  <!-- Nom -->
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef> Nom </th>
+    <td mat-cell *matCellDef="let product"> {{ product.name }} </td>
+  </ng-container>
+
+  <!-- Prix -->
+  <ng-container matColumnDef="price">
+    <th mat-header-cell *matHeaderCellDef> Prix </th>
+    <td mat-cell *matCellDef="let product"> {{ product.price | currency }} </td>
+  </ng-container>
+
+  <!-- Description -->
+  <ng-container matColumnDef="description">
+    <th mat-header-cell *matHeaderCellDef> Description </th>
+    <td mat-cell *matCellDef="let product"> {{ product.description }} </td>
+  </ng-container>
+
+  <!-- Ligne d'en-tête -->
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <!-- Lignes de données -->
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
