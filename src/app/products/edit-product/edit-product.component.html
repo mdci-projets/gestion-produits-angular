@@ -1,0 +1,33 @@
+<div *ngIf="isLoading">Chargement...</div>
+
+<div *ngIf="!isLoading">
+  <h2>Modifier le produit</h2>
+  <form (ngSubmit)="saveProduct()" class="form-flex-container">
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Nom</mat-label>
+        <input matInput [(ngModel)]="product.name" name="name" required>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="half-width">
+        <mat-label>Prix</mat-label>
+        <input matInput type="number" [(ngModel)]="product.price" name="price" required>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="fill" class="full-width">
+        <mat-label>Description</mat-label>
+        <textarea matInput [(ngModel)]="product.description" name="description"></textarea>
+      </mat-form-field>
+    </div>
+
+    <div class="button-container">
+      <button mat-button color="primary" type="submit">Sauvegarder</button>
+      <button mat-button color="warn" type="button" (click)="router.navigate(['/products'])">Annuler</button>
+    </div>
+  </form>
+</div>
+

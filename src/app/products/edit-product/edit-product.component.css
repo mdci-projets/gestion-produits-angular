@@ -1,0 +1,27 @@
+.form-flex-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 600px;
+  margin: auto;
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.full-width {
+  flex: 1 1 100%; /* Prend toute la largeur */
+}
+
+.half-width {
+  flex: 1 1 calc(50% - 16px); /* Occupe la moitié avec un espacement */
+}
+
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
