@@ -1,36 +1,44 @@
-
 <h1 *ngIf="isHomePage">Bienvenue sur l'accueil</h1>
 <h1 *ngIf="!isHomePage">Liste des produits</h1>
-<table mat-table [dataSource]="products" class="mat-elevation-z8">
-  <!-- Nom -->
-  <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef> Nom </th>
-    <td mat-cell *matCellDef="let product"> {{ product.name }} </td>
-  </ng-container>
+<div>
+  <table mat-table [dataSource]="products" class="mat-elevation-z8">
+    <!-- Nom -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Nom</th>
+      <td mat-cell *matCellDef="let product"> {{ product.name }}</td>
+    </ng-container>
 
-  <!-- Prix -->
-  <ng-container matColumnDef="price">
-    <th mat-header-cell *matHeaderCellDef> Prix </th>
-    <td mat-cell *matCellDef="let product"> {{ product.price | currency }} </td>
-  </ng-container>
+    <!-- Prix -->
+    <ng-container matColumnDef="price">
+      <th mat-header-cell *matHeaderCellDef> Prix</th>
+      <td mat-cell *matCellDef="let product"> {{ product.price | currency }}</td>
+    </ng-container>
 
-  <!-- Description -->
-  <ng-container matColumnDef="description">
-    <th mat-header-cell *matHeaderCellDef> Description </th>
-    <td mat-cell *matCellDef="let product"> {{ product.description }} </td>
-  </ng-container>
+    <!-- Description -->
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef> Description</th>
+      <td mat-cell *matCellDef="let product"> {{ product.description }}</td>
+    </ng-container>
 
-  <!-- Actions -->
-  <ng-container matColumnDef="actions">
-    <th mat-header-cell *matHeaderCellDef> Actions</th>
-    <td mat-cell *matCellDef="let produit">
-      <button mat-button (click)="onEdit(produit.id)">Modifier</button>
-      <button mat-button color="warn" (click)="onDelete(produit.id)">Supprimer</button>
-    </td>
-  </ng-container>
+    <!-- Actions -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef> Actions</th>
+      <td mat-cell *matCellDef="let produit">
+        <button mat-button (click)="onEdit(produit.id)">Modifier</button>
+        <button mat-button color="warn" (click)="onDelete(produit.id)">Supprimer</button>
+      </td>
+    </ng-container>
 
-  <!-- Ligne d'en-tête -->
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <!-- Lignes de données -->
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-</table>
+    <!-- Ligne d'en-tête -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <!-- Lignes de données -->
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <mat-paginator
+    [length]="totalElements"
+    [pageSize]="size"
+    (page)="onPageChange($event.pageIndex)">
+  </mat-paginator>
+
+</div>

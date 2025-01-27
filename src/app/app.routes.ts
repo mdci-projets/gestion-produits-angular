@@ -1,31 +1,40 @@
 import { Routes } from '@angular/router';
-import { ListProductComponent } from './products/list-product/list-product.component';
-import { AddProductComponent } from './products/add-product/add-product.component';
-import { EditProductComponent } from './products/edit-product/edit-product.component';
 import { LoginComponent } from './auth/login/login.component';
 import { AuthGuard } from './auth/auth.guard';
 
 export const routes: Routes = [
   {
-      path: '',
-      component: ListProductComponent, // Chemin de la page d'accueil
+    path: '',
+    loadComponent: () =>
+      import('./products/list-product/list-product.component').then(
+         (m) => m.ListProductComponent
+      ),
       data: { page: 'home' }, // Indique que c'est l'accueil
       canActivate: [AuthGuard] // Protection avec AuthGuard
   },
   {
     path: 'products',
-    component: ListProductComponent, // Chemin de la page d'accueil
-    data: { page: 'products' }, // Indique que c'est la liste des produits
-    canActivate: [AuthGuard]
+    loadComponent: () =>
+      import('./products/list-product/list-product.component').then(
+        (m) => m.ListProductComponent
+      ),
+      data: { page: 'products' }, // Indique que c'est la liste des produits
+      canActivate: [AuthGuard]
   },
   {
     path: 'add-product',
-    component: AddProductComponent,
+    loadComponent: () =>
+      import('./products/add-product/add-product.component').then(
+      (m) => m.AddProductComponent
+    ),
     canActivate: [AuthGuard] // Protection avec le route guard
   },
   {
     path: 'products/edit/:id',
-    component: EditProductComponent, // Route pour modifier un produit
+    loadComponent: () =>
+      import('./products/edit-product/edit-product.component').then(
+      (m) => m.EditProductComponent
+    ),
     canActivate: [AuthGuard] // Protection avec le route guard
   },
   {

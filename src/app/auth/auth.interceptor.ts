@@ -15,6 +15,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   // Récupérer le token via AuthService
   const token = authService.getToken();
+
   let clonedRequest = req;
 
  if (token) {

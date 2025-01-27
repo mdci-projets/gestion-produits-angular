@@ -7,6 +7,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { AuthService } from '../../auth.service';
 
 @Component({
@@ -16,7 +17,8 @@ CommonModule,
 HttpClientModule,
 MatTableModule,
 MatButtonModule,
-MatIconModule
+MatIconModule,
+MatPaginatorModule
 ],
 templateUrl: './list-product.component.html',
 styleUrls: ['./list-product.component.css']
@@ -25,6 +27,9 @@ export class ListProductComponent implements OnInit {
 
 displayedColumns: string[] = ['name', 'price', 'description', 'actions']; // Colonnes affichées
 products = new MatTableDataSource<Product>(); // Source de données pour la table
+page = 0;
+size = 5;
+totalElements = 0;
 errorMessage: string = '';
 isHomePage = false;
 
@@ -51,14 +56,19 @@ constructor(
 
  // Charger les produits
   loadProducts(): void {
-    this.productService.getProducts().subscribe({
-            next: (data) => {
-              this.products.data = data; // Associe les données au data source
-            },
-            error: (err) => {
-              this.errorMessage = 'Impossible de charger les produits.';
-            }
-    });
+    this.productService.getProducts(this.page, this.size).subscribe({
+       next: (data) => {
+          this.products.data = data.content; // Associe les données au data source
+          this.totalElements = data.totalElements;
+       },
+       error: (err) =>
+          console.error('Erreur lors de la récupération des produits', err),
+       });
+  }
+
+  onPageChange(newPage: number): void {
+      this.page = newPage;
+      this.loadProducts();
   }
 
   // Modifier un produit
