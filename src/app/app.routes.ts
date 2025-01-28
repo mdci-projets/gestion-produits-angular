@@ -41,8 +41,11 @@ export const routes: Routes = [
       path: 'login',
       component: LoginComponent
   },
-  {
-    path: '**', // Redirection pour les routes non trouvées
-    redirectTo: ''
-  }
+ { path: 'not-found',
+    loadComponent: () =>
+        import('./shared/not-found.component').then(m => m.NotFoundComponent)
+ },
+ { path: '**',
+  redirectTo: 'not-found'
+ }, // Redirige toutes les routes non définies
 ];

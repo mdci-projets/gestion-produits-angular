@@ -6,6 +6,8 @@ import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { authInterceptor } from './shared/auth/auth.interceptor';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { HttpErrorInterceptor } from './shared/http-error.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers:
@@ -14,8 +16,10 @@ export const appConfig: ApplicationConfig = {
       provideHttpClient(
          withInterceptors([
            authInterceptor, // Ajout de l'intercepteur
+           HttpErrorInterceptor,  // Intercepteur pour la gestion des erreurs
          ])
       ),
+      MatSnackBarModule, // Import du module pour les notifications
       provideNoopAnimations()
   ]
 };

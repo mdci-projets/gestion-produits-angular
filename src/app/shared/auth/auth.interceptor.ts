@@ -16,9 +16,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   // Récupérer le token via AuthService
   const token = authService.getToken();
 
-  let clonedRequest = req;
-
- if (token) {
+  if (token) {
      req = req.clone({
        headers: req.headers.set('Authorization', `Bearer ${token}`),
      });
@@ -26,13 +24,5 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
      console.warn('Interceptor - No token found, request sent without Authorization');
    }
 
-   return next(req).pipe(
-     catchError((error) => {
-       if (error.status === 401 || error.status === 403) {
-         authService.logout();
-         router.navigate(['/login'], { queryParams: { returnUrl: router.url } });
-       }
-       return throwError(() => error);
-     })
-   );
- };
+   return next(req); // Pas de gestion des erreurs ici
+};

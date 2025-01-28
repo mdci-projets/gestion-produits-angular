@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product, PaginatedResponse } from './model/product';
 import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs'; // Import pour relancer une erreur
 
 @Injectable({
   providedIn: 'root'
@@ -15,12 +16,7 @@ constructor(private http: HttpClient) {}
   // Méthode pour récupérer les produits
   getProducts(page: number, size: number): Observable<PaginatedResponse<Product>> {
     // Retourne un Observable de type Product[] en effectuant une requête HTTP
-    return this.http.get<PaginatedResponse<Product>>(`${this.baseUrl}?page=${page}&size=${size}`, { withCredentials: true })
-      .pipe(catchError((error) => {
-        console.error('Erreur lors de la récupération des produits :', error);
-        throw error;
-        })
-      );
+    return this.http.get<PaginatedResponse<Product>>(`${this.baseUrl}?page=${page}&size=${size}`, { withCredentials: true });
   }
 
   // Méthode pour ajouter un produit
