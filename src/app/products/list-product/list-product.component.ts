@@ -8,7 +8,7 @@ import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { AuthService } from '../../auth.service';
+import { AuthService } from '../../shared/auth/auth.service';
 
 @Component({
 selector: 'app-list-product',
@@ -44,8 +44,8 @@ constructor(
 
    if (this.authService.isLoggedIn()) {
         // Vérifie si la page actuelle est l'accueil
-        const page = this.route.snapshot.data['page'];
-        this.isHomePage = page === 'home';
+        const title = this.route.snapshot.data['title'];
+        this.isHomePage = title === 'home';
         // Récupération des produits
         this.loadProducts();
        } else {

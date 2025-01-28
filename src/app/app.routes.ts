@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './auth/login/login.component';
-import { AuthGuard } from './auth/auth.guard';
+import { LoginComponent } from './shared/auth/login/login.component';
+import { AuthGuard } from './shared/auth/auth.guard';
 
 export const routes: Routes = [
   {
@@ -9,7 +9,7 @@ export const routes: Routes = [
       import('./products/list-product/list-product.component').then(
          (m) => m.ListProductComponent
       ),
-      data: { page: 'home' }, // Indique que c'est l'accueil
+      data: { title: 'home' }, // Indique que c'est l'accueil
       canActivate: [AuthGuard] // Protection avec AuthGuard
   },
   {
@@ -18,7 +18,7 @@ export const routes: Routes = [
       import('./products/list-product/list-product.component').then(
         (m) => m.ListProductComponent
       ),
-      data: { page: 'products' }, // Indique que c'est la liste des produits
+      data: { title: 'products' }, // Indique que c'est la liste des produits
       canActivate: [AuthGuard]
   },
   {

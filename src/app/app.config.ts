@@ -5,7 +5,7 @@ import { routes } from './app.routes';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { authInterceptor } from './auth/auth.interceptor';
+import { authInterceptor } from './shared/auth/auth.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers:
