@@ -15,6 +15,7 @@ import { Product } from '../model/product';
 export class AddProductComponent implements OnInit {
   productForm: FormGroup;
   productCreated: Product | undefined = undefined;
+  errorMessage: string | null = null;
 
   constructor(private fb: FormBuilder, private productService: ProductService, private router: Router ) {
     this.productForm = this.fb.group({
@@ -28,21 +29,17 @@ export class AddProductComponent implements OnInit {
   }
 
   onSubmit(): void {
-    if (this.productForm.valid) {
-      const newProduct: Product = this.productForm.value;
-      this.productService.addProduct(newProduct).subscribe({
-        next: (response) => {
-          console.log('Produit ajouté avec succès :', response);
-          alert('Produit ajouté avec succès !');
-          this.productCreated = response;
-          this.productForm.reset();
-          this.router.navigate(['/']); // Redirection vers la page d'accueil
+      if (this.productForm.invalid) {
+        return;
+      }
+
+      this.productService.addProduct(this.productForm.value).subscribe({
+        next: () => {
+          this.router.navigate(['/']); // Redirection après succès
         },
         error: (err) => {
-          console.error('Erreur lors de l\'ajout du produit :', err);
-          alert('Une erreur est survenue lors de l\'ajout du produit.');
+          this.errorMessage = 'Erreur lors de l’ajout du produit : ' + (err.message || 'Erreur inconnue');
         }
       });
     }
   }
-}

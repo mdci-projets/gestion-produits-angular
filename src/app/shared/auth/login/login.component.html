@@ -1,17 +1,18 @@
 <div class="login-container">
   <h2>Connexion</h2>
-  <form (ngSubmit)="login()">
-    <mat-form-field appearance="fill">
+  <form (ngSubmit)="login()">  
+    <mat-form-field appearance="fill" [floatLabel]="'always'">
       <mat-label>Username</mat-label>
-      <input matInput [(ngModel)]="credentials.username" name="username" required>
+      <input matInput name="username" required [(ngModel)]="credentials.username">
     </mat-form-field>
-
-    <mat-form-field appearance="fill">
+    
+    <mat-form-field appearance="fill" [floatLabel]="'always'">
       <mat-label>Mot de passe</mat-label>
-      <input matInput [(ngModel)]="credentials.password" name="password" type="password" required>
+      <input matInput name="password" type="password" required [(ngModel)]="credentials.password">
     </mat-form-field>
-
-    <button mat-button color="primary" type="submit">Se connecter</button>
+    
+    <button mat-raised-button color="primary" type="submit">Se connecter</button>
+    
     <p *ngIf="error" class="error">{{ error }}</p>
   </form>
 </div>
