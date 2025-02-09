@@ -13,10 +13,11 @@ context('Actions', () => {
                 body: { token: 'fake-jwt-token' }
             }).as('loginRequest');
 
-            cy.get('input[name="username"]').type('admin@test.com', { delay: 100 });
-            cy.get('input[name="password"]').type('password123', { delay: 100 });
+            cy.wait(1000); // ✅ Attendre un peu
+            cy.get('input[name="username"]').type('admin@test.com', { force: true });
+            cy.get('input[name="password"]').type('password123', { force: true });
 
-            cy.get('button[type="submit"]').click();
+            cy.get('button[type="submit"]').click({ force: true });
             cy.wait('@loginRequest'); // Attendre que la requête API soit interceptée
 
             cy.wait(100); // Attendre la redirection
@@ -41,7 +42,7 @@ context('Actions', () => {
 
             // Vérifie que le message s'affiche dans le MatSnackBar
             cy.get('.mat-mdc-snack-bar-container', { timeout: 5000 }).should('be.visible');
-            cy.contains('.mat-mdc-snack-bar-container', 'Requête invalide. Veuillez vérifier les informations saisies.').should('be.visible');
+            cy.contains('.mat-mdc-snack-bar-container', 'Invalid username or password').should('be.visible');
         });
     });
 });

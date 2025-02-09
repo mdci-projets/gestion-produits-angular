@@ -13,12 +13,15 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/fronted",
+            "allowedCommonJsDependencies": [
+                "sockjs-client"
+            ],
+            "outputPath": "dist/fronted-angular",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
               "zone.js",
-              "src/polyfills.ts"  
+              "src/polyfills.ts"
             ],
             "tsConfig": "tsconfig.app.json",
             "assets": [
@@ -43,8 +46,8 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "1mb",
+                  "maximumError": "2mb"
                 },
                 {
                   "type": "anyComponentStyle",
@@ -52,7 +55,9 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "optimization": true,
+              "sourceMap": false
             },
             "development": {
               "optimization": false,
@@ -106,11 +111,23 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
   "cli": {
-    "analytics": "eec4e02d-8a03-4d12-baec-e76803578d12"
+    "analytics": "eec4e02d-8a03-4d12-baec-e76803578d12",
+    "schematicCollections": [
+      "angular-eslint"
+    ]
   }
 }

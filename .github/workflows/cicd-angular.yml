@@ -1,0 +1,75 @@
+name: CI/CD Angular avec Cypress
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ci:
+    name: 🔍 Lint, Test & Cypress
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📂 Checkout du Code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 📦 Installer les Dépendances
+        run: npm ci
+
+     #  - name: 🔍 Vérification du Code (Lint)
+     #    run: npx eslint src/
+
+      - name: 🛠️ Lancer les Tests Unitaires
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
+
+      - name: 🌐 Démarrer l'Application en Mode Test
+        run: npm run start &  # Lancer l'application Angular en arrière-plan
+        env:
+          CYPRESS_BASE_URL: http://localhost:4300  # Assurez-vous que c'est l'URL correcte
+
+      - name: ⏳ Attendre que l'Application Soit Prête
+        run: sleep 10 # Attendez quelques secondes pour être sûr que l'app est prête
+
+      - name: ✅ Exécuter les Tests E2E avec Cypress
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm run start  # Démarrer Angular avant les tests
+          wait-on: 'http://localhost:4300'  # Attendre que l'application soit prête
+          browser: chrome  # Exécuter les tests sur Chrome 
+
+  cd:
+    name: 🚀 Build & Deploy
+    needs: ci
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📂 Checkout du Code
+        uses: actions/checkout@v4
+
+      - name: 🏗️ Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: 📦 Installer les Dépendances
+        run: npm ci
+
+      - name: 🏗️ Construire l'Application
+        run: npm run build -- --configuration=production
+
+      - name: 🚀 Déploiement sur GitHub Pages
+        if: success()
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: dist/fronted-angular/browser
+          clean: true
