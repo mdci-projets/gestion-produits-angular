@@ -24,5 +24,13 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
      console.warn('Interceptor - No token found, request sent without Authorization');
    }
 
-   return next(req); // Pas de gestion des erreurs ici
+   return next(req).pipe(
+    catchError((error) => {
+      if (error.status === 401) {
+        console.error('🚨 401 Unauthorized - Redirection vers /login');
+        router.navigate(['/login']);
+      }
+      return throwError(() => error);
+    })
+  );
 };

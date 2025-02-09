@@ -4,4 +4,12 @@
     <a routerLink="/add-product" class="add-product-link">Ajouter un produit</a>
   </nav>
 </header>
+<ng-container *ngIf="isAuthenticated()">
+  <app-notification></app-notification>
+</ng-container>
+
+<ng-container *ngIf="!isAuthenticated()">
+  <h1>Veuillez vous connecter</h1>
+  <a routerLink="/login" class="login-link">Se Connecter</a>
+</ng-container>
 <router-outlet></router-outlet> <!-- Point d'ancrage pour afficher les composants en fonction des routes -->

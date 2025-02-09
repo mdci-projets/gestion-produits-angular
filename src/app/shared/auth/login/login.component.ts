@@ -6,6 +6,9 @@ import {MatFormFieldModule}from '@angular/material/form-field';
 import {MatInputModule}from '@angular/material/input';
 import {MatButtonModule}from '@angular/material/button';
 import {AuthService}from '../auth.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { NotificationService } from '../../../websocket/notification.service';
 
 @Component({
 selector: 'app-login',
@@ -16,7 +19,8 @@ CommonModule,
 FormsModule,
 MatFormFieldModule,
 MatInputModule,
-MatButtonModule
+MatButtonModule,
+MatSnackBarModule
 ]
 })
 export class LoginComponent {
@@ -26,24 +30,33 @@ error: string | null = null;
 constructor(
         private authService: AuthService,
         private router: Router,
-        private route: ActivatedRoute
-        ) {}
+        private route: ActivatedRoute,
+        private notificationService: NotificationService,
+        private snackBar: MatSnackBar
+) {}
 
   login(): void {
     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
     this.authService.login(this.credentials).subscribe({
       next: (response) => {
         if (response && response.token) {
-          this.authService.storeToken(response.token);
-          this.router.navigate([returnUrl]); // Redirige vers la page précédente ou l'accueil
-        } else {
-          this.error = 'Connexion échouée. Veuillez vérifier vos informations.';
-        }
+          if (!this.notificationService.socketIsConnected()) {
+            this.notificationService.connect();
+          }
+          this.router.navigate([returnUrl]); 
+          this.showSuccessMessage('Connexion réussie !');
+        } 
       },
-      error: (err) => {
-        this.error = 'Identifiants invalides';
-        console.error(err);
-      }
+      error: (err) => {}
+    });
+  }
+  
+  private showSuccessMessage(message: string): void {
+    this.snackBar.open(message, 'Fermer', {
+      duration: 3000,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+      panelClass: ['success-snackbar']
     });
   }
 }

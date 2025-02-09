@@ -40,8 +40,8 @@ context('Actions', () => {
             cy.wait('@loginFailed'); // Attendre que la requête API soit interceptée
 
             // Vérifie que le message s'affiche dans le MatSnackBar
-            cy.get('.mat-mdc-snack-bar-container').should('be.visible');
-            cy.contains('.mat-mdc-snack-bar-container', 'Invalid username or password').should('be.visible');
+            cy.get('.mat-mdc-snack-bar-container', { timeout: 5000 }).should('be.visible');
+            cy.contains('.mat-mdc-snack-bar-container', 'Requête invalide. Veuillez vérifier les informations saisies.').should('be.visible');
         });
     });
 });

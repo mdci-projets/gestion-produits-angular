@@ -1,31 +1,88 @@
-import{Injectable}from'@angular/core';
+import { Injectable } from '@angular/core';
 
 @Injectable({
-providedIn: 'root'
+  providedIn: 'root'
 })
 export class StorageService {
-// Vérifie si localStorage est disponible
-private isLocalStorageAvailable(): boolean {
-    return typeof localStorage !== 'undefined';
-  }
+  private storage: Storage | null = null;
 
-  setItem(key: string, value: string): void {
-    if (this.isLocalStorageAvailable()) {
-      localStorage.setItem(key, value);
+  constructor() {
+    if (typeof window !== 'undefined') {
+      // ✅ Vérifie si le stockage est accessible uniquement côté client
+      this.storage = this.getAvailableStorage();
     }
   }
 
-  getItem(key: string): string | null {
-    if (this.isLocalStorageAvailable()) {
-      return localStorage.getItem(key);
+  /**
+   * 🛠️ Vérifie quel stockage est disponible (localStorage ou sessionStorage).
+   */
+  private getAvailableStorage(): Storage {
+    try {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem('__test__', 'test');
+        localStorage.removeItem('__test__');
+        return localStorage;
+      }
+    } catch (e) {
+      console.warn('⚠️ localStorage non disponible, basculement vers sessionStorage.');
     }
-    return null;
+
+    try {
+      if (typeof sessionStorage !== 'undefined') {
+        sessionStorage.setItem('__test__', 'test');
+        sessionStorage.removeItem('__test__');
+        return sessionStorage;
+      }
+    } catch (e) {
+      console.warn('⚠️ sessionStorage non disponible.');
+    }
+
+    console.error('❌ Aucun stockage disponible.');
+    return null!;
   }
 
+  /**
+   * 💾 Enregistre une valeur dans le stockage.
+   */
+  setItem<T>(key: string, value: T): void {
+    if (!this.storage) return;
+    try {
+      this.storage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error(`❌ Erreur lors du stockage de ${key}:`, error);
+    }
+  }
+
+  /**
+   * 🔍 Récupère une valeur du stockage.
+   */
+  getItem<T>(key: string): T | null {
+    if (!this.storage) return null;
+    const item = this.storage.getItem(key);
+    if (!item) return null;
+
+    try {
+      return JSON.parse(item) as T;
+    } catch (error) {
+      console.error(`❌ Erreur lors de la récupération de ${key}:`, error);
+      return null;
+    }
+  }
+
+  /**
+   * 🗑️ Supprime un élément du stockage.
+   */
   removeItem(key: string): void {
-    if (this.isLocalStorageAvailable()) {
-      localStorage.removeItem(key);
-    }
+    if (!this.storage) return;
+    this.storage.removeItem(key);
+  }
+
+  /**
+   * 🧹 Supprime toutes les données stockées.
+   */
+  clearStorage(): void {
+    if (!this.storage) return;
+    this.storage.clear();
+    console.warn('⚠️ Toutes les données de stockage ont été supprimées.');
   }
 }
-

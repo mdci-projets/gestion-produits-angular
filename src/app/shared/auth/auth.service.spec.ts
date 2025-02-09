@@ -9,7 +9,7 @@ describe('AuthService', () => {
   let storageServiceSpy: jasmine.SpyObj<StorageService>;
 
   beforeEach(() => {
-    // Mock de StorageService
+    // Création d'un mock de StorageService
     const storageSpy = jasmine.createSpyObj('StorageService', ['setItem', 'getItem', 'removeItem']);
 
     TestBed.configureTestingModule({
@@ -33,39 +33,48 @@ describe('AuthService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('✅ devrait envoyer une requête POST lors de la connexion', () => {
+  it('✅ devrait envoyer une requête POST lors de la connexion et retourner un token mocké', () => {
     const credentials = { username: 'testuser', password: 'password' };
     const mockResponse = { token: 'mocked.jwt.token' };
-
+  
+    // 🟢 Mock la requête `/auth/login` avec un faux retour (évite l'appel backend)
     service.login(credentials).subscribe(response => {
       expect(response).toEqual(mockResponse);
     });
-
+  
+    // 🔥 Vérifie que la requête a été envoyée correctement
     const req = httpMock.expectOne('http://localhost:8080/auth/login');
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(credentials);
+  
+    // ✅ Simule la réponse API (évite le backend)
     req.flush(mockResponse);
   });
 
-  it('✅ devrait retourner null en cas d\'erreur de connexion', () => {
+
+  it('✅ devrait retourner une erreur "Identifiants invalides" en cas d\'échec de connexion', () => {
     const credentials = { username: 'testuser', password: 'password' };
-
-    service.login(credentials).subscribe(response => {
-      expect(response).toBeNull(); // L'Observable retourne `null` en cas d'erreur
+  
+    service.login(credentials).subscribe({
+      error: (err) => {
+        expect(err.message).toBe('Identifiants invalides');
+      }
     });
-
+  
     const req = httpMock.expectOne('http://localhost:8080/auth/login');
-    req.error(new ErrorEvent('Network error')); // Simule une erreur réseau
+    req.error(new ErrorEvent('Invalid credentials')); // Simule une erreur API
   });
+  
 
-  it('✅ devrait stocker le token lors de l\'appel de storeToken()', () => {
+  it('✅ devrait stocker le token correctement', () => {
     const token = 'mocked.jwt.token';
     service.storeToken(token);
-    expect(storageServiceSpy.setItem).toHaveBeenCalledWith('authToken', token);
+    
+    expect(storageServiceSpy.setItem).toHaveBeenCalledWith('authToken', { token: 'mocked.jwt.token'});
   });
 
   it('✅ devrait récupérer le token depuis StorageService', () => {
-    storageServiceSpy.getItem.and.returnValue('mocked.jwt.token');
+    storageServiceSpy.getItem.and.returnValue({ token: 'mocked.jwt.token'});
     expect(service.getToken()).toBe('mocked.jwt.token');
   });
 
@@ -76,15 +85,16 @@ describe('AuthService', () => {
 
   it('✅ devrait retourner false si le token est expiré', () => {
     const expiredToken = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) - 100 })); // Token expiré
-    storageServiceSpy.getItem.and.returnValue(`header.${expiredToken}.signature`);
+    storageServiceSpy.getItem.and.returnValue(JSON.parse(JSON.stringify({ token: expiredToken })));  
     expect(service.isLoggedIn()).toBeFalse();
   });
-
+   
   it('✅ devrait retourner true si le token est valide', () => {
-    const validToken = btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600 })); // Expire dans 1h
-    storageServiceSpy.getItem.and.returnValue(`header.${validToken}.signature`);
+    const validToken = `${btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }))}.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600, sub: "test-user" }))}.fake-signature`;
+    storageServiceSpy.getItem.and.returnValue(JSON.parse(JSON.stringify({ token: validToken })));  
     expect(service.isLoggedIn()).toBeTrue();
-  });
+  });  
+  
 
   it('✅ devrait supprimer le token lors de l\'appel de logout()', () => {
     service.logout();

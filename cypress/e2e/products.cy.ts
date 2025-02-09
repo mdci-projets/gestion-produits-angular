@@ -3,7 +3,7 @@ describe('Liste des Produits - Test E2E avec Cypress et Angular Material MDC', (
       // 1️⃣ Mock un faux token JWT bien formaté (Sans backend)
       const fakeToken = `${btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }))}.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600, sub: "test-user" }))}.fake-signature`;
       // 2️⃣ Simule l'authentification
-      localStorage.setItem('authToken', fakeToken);
+      localStorage.setItem('authToken', JSON.stringify({token: fakeToken}));
   
       // 3️⃣ Mock API : Intercepter et simuler la réponse de l'API des produits
       cy.intercept('GET', '**/api/products*', {

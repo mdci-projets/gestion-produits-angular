@@ -3,42 +3,54 @@ import { StorageService } from './storage.service';
 
 describe('StorageService', () => {
   let service: StorageService;
-  let mockLocalStorage: Storage;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(StorageService);
 
-    // Mock de `localStorage`
-    mockLocalStorage = {
-      length: 0,
-      getItem: jasmine.createSpy('getItem').and.callFake((key: string) => null),
-      setItem: jasmine.createSpy('setItem').and.callFake((key: string, value: string) => {}),
-      removeItem: jasmine.createSpy('removeItem').and.callFake((key: string) => {}),
-      clear: jasmine.createSpy('clear').and.callFake(() => {}),
-      key: jasmine.createSpy('key').and.callFake((index: number) => null)
-    };
+    // 🛠️ Mock manuel de `localStorage`
+    let store: { [key: string]: string } = {};
 
-    spyOnProperty(window, 'localStorage', 'get').and.returnValue(mockLocalStorage);
+    spyOn(window.localStorage, 'setItem').and.callFake((key: string, value: string) => {
+      store[key] = value;
+    });
+
+    spyOn(window.localStorage, 'getItem').and.callFake((key: string) => store[key] || null);
+
+    spyOn(window.localStorage, 'removeItem').and.callFake((key: string) => {
+      delete store[key];
+    });
+
+    spyOn(window.localStorage, 'clear').and.callFake(() => {
+      store = {};
+    });
   });
 
   afterEach(() => {
     localStorage.clear();
   });
 
-  it('✅  devrait stocker un token', () => {
+  it('✅ devrait stocker un token', () => {
     service.setItem('authToken', 'test-token');
-    expect(localStorage.setItem).toHaveBeenCalledWith('authToken', 'test-token');
+    expect(localStorage.setItem).toHaveBeenCalledWith('authToken', '"test-token"'); // ⚠️ JSON.stringify ajoute des guillemets
   });
 
-  it('✅  devrait récupérer un token', () => {
-    localStorage.getItem = jasmine.createSpy('getItem').and.returnValue('test-token');
+  it('✅ devrait récupérer un token', () => {
+    service.setItem('authToken', 'test-token');
     expect(service.getItem('authToken')).toBe('test-token');
-    expect(localStorage.getItem).toHaveBeenCalledWith('authToken');
   });
 
-  it('✅  devrait supprimer un token', () => {
+  it('✅ devrait supprimer un token', () => {
+    service.setItem('authToken', 'test-token');
     service.removeItem('authToken');
     expect(localStorage.removeItem).toHaveBeenCalledWith('authToken');
+    expect(service.getItem('authToken')).toBeNull();
+  });
+
+  it('✅ devrait vider tout le stockage', () => {
+    service.setItem('authToken', 'test-token');
+    service.clearStorage();
+    expect(localStorage.clear).toHaveBeenCalled();
+    expect(service.getItem('authToken')).toBeNull();
   });
 });

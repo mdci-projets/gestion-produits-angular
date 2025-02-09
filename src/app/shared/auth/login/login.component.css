@@ -1,0 +1,6 @@
+.error-snackbar {
+    background-color: #d32f2f !important; /* Rouge pour une alerte */
+    color: white !important;
+    font-weight: bold;
+  }
+  

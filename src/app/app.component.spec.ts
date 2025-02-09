@@ -1,11 +1,15 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing'; // ✅ Ajouté !
+import { AuthService } from './shared/auth/auth.service';
+import { NotificationService } from './websocket/notification.service';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent, RouterTestingModule], // Utilisation de `imports` au lieu de `declarations`
+      imports: [AppComponent, RouterTestingModule, HttpClientTestingModule], // ✅ Ajout de `HttpClientTestingModule`
+      providers: [AuthService, NotificationService], // ✅ Fournir les services nécessaires
     }).compileComponents();
   });
 

@@ -1,0 +1,9 @@
+<div class="notification-container">
+  <h3>🔔 Notifications</h3>
+  <ul *ngIf="notifications.length > 0">
+    <li *ngFor="let notification of notifications">
+      {{ notification }}
+    </li>
+  </ul>
+  <p *ngIf="notifications.length === 0">Aucune notification pour l'instant.</p>
+</div>
