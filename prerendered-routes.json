@@ -1,0 +1,9 @@
+{
+  "routes": {
+    "/": {},
+    "/add-product": {},
+    "/login": {},
+    "/not-found": {},
+    "/products": {}
+  }
+}
