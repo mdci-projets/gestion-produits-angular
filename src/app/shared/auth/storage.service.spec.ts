@@ -9,7 +9,7 @@ describe('StorageService', () => {
     service = TestBed.inject(StorageService);
 
     // 🛠️ Mock manuel de `localStorage`
-    let store: { [key: string]: string } = {};
+    let store: Record<string, string> = {};
 
     spyOn(window.localStorage, 'setItem').and.callFake((key: string, value: string) => {
       store[key] = value;

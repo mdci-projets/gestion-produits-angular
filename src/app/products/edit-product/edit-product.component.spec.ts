@@ -30,7 +30,7 @@ describe('EditProductComponent', () => {
       providers: [
         { provide: ProductService, useValue: productServiceMock },
         { provide: Router, useValue: routerMock },
-        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: (id: string) => '1' } } } }
+        { provide: ActivatedRoute, useValue: { snapshot: { paramMap: { get: () => '1' } } } }
       ]
     }).compileComponents();
   });

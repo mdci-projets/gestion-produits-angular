@@ -1,8 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { NotificationService } from './notification.service';
 import { AuthService } from '../shared/auth/auth.service';
-import { Client, Message } from '@stomp/stompjs';
-import { of } from 'rxjs';
 
 // ✅ 1️⃣ Mock du STOMP Client
 class MockStompClient {
@@ -19,8 +17,6 @@ class MockStompClient {
     publish = jasmine.createSpy('publish');
   }
   
-  
-
 // ✅ 2️⃣ Mock AuthService
 class MockAuthService {
   getToken = jasmine.createSpy('getToken').and.returnValue('fake-token');
@@ -49,12 +45,11 @@ describe('NotificationService', () => {
     service = TestBed.inject(NotificationService);
 
     // Remplace le stompClient par le mock
-    (service as any).stompClient = mockStompClient;
+    (service as unknown as { stompClient: typeof mockStompClient }).stompClient = mockStompClient;
   });
 
   it('🚨 ne doit pas activer WebSocket si déjà connecté', () => {
-    (service as any).isConnected = true; // Simule un WebSocket actif
-    
+    (service as unknown as { isConnected: boolean }).isConnected = true; // Simule un WebSocket actif    
     service.connect();
   
     expect(mockStompClient.activate).not.toHaveBeenCalled(); // ❌ Vérifie que `activate()` n'est PAS appelé
@@ -62,8 +57,7 @@ describe('NotificationService', () => {
   });
 
   it('✅ devrait retourner vrai si le WebSocket est connecté', () => {
-    (service as any).isConnected = true; // Force la connexion
-
+    (service as unknown as { isConnected: boolean }).isConnected = true; // Force la connexion
     expect(service.socketIsConnected()).toBeTrue(); // Vérifie que la connexion est bien active
   });
 

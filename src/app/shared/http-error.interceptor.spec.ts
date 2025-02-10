@@ -6,13 +6,14 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { EnvironmentInjector } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { AuthService } from '../shared/auth/auth.service';
 
 describe('HttpErrorInterceptor', () => {
   let snackBar: MatSnackBar;
   let router: Router;
   let next: HttpHandlerFn;
-  let request: HttpRequest<any>;
+  let request: HttpRequest<unknown>;
   let injector: EnvironmentInjector;
   let authService: jasmine.SpyObj<AuthService>;
 
@@ -38,13 +39,18 @@ describe('HttpErrorInterceptor', () => {
     request = new HttpRequest('GET', '/test');
   });
 
-  function runInterceptorWithError(errorResponse: any, done: any, expectedMessage: string, expectedClass: string, shouldNavigate = false) {
+  function runInterceptorWithError(
+    errorResponse: HttpErrorResponse, 
+    done: () => void, 
+    expectedMessage: string, 
+    expectedClass: string, 
+    shouldNavigate = false
+  ): void {
     injector.runInContext(() => {
       next = jasmine.createSpy().and.returnValue(throwError(() => errorResponse));
 
       HttpErrorInterceptor(request, next).subscribe({
         error: (err) => {
-          // ✅ Vérifie que le `snackBar` a été appelé avec le bon message et la bonne classe CSS
           expect(snackBar.open).toHaveBeenCalledWith(expectedMessage, 'FERMER', {
             duration: 6000,
             horizontalPosition: 'center',
@@ -66,33 +72,63 @@ describe('HttpErrorInterceptor', () => {
   }
 
   it('✅ devrait afficher un message d\'erreur 400 avec `warning-snackbar`', (done) => {
-    runInterceptorWithError({ status: 400 }, done, '⚠️ Requête invalide. Vérifiez les informations saisies.', 'warning-snackbar');
+    runInterceptorWithError(new HttpErrorResponse({
+      status: 400, 
+      statusText: 'Bad Request', 
+      error: { message: '⚠️ Requête invalide. Vérifiez les informations saisies.' }
+    }), done, '⚠️ Requête invalide. Vérifiez les informations saisies.', 'warning-snackbar');
   });
 
   it('✅ devrait afficher un message d\'erreur 401 avec `auth-snackbar` et rediriger', (done) => {
-    runInterceptorWithError({ status: 401 }, done, '🔒 Session expirée. Veuillez vous reconnecter.', 'auth-snackbar', true);
+    runInterceptorWithError(new HttpErrorResponse({
+      status: 401, 
+      statusText: 'Unauthorized', 
+      error: { message: '🔒 Session expirée. Veuillez vous reconnecter.' }
+    }), done, '🔒 Session expirée. Veuillez vous reconnecter.', 'auth-snackbar', true);
+
     expect(authService.logout).toHaveBeenCalled();
   });
 
   it('✅ devrait afficher un message d\'erreur 403 avec `auth-snackbar`', (done) => {
-    runInterceptorWithError({ status: 403 }, done, '⛔ Accès refusé ! Vous n’êtes pas autorisé.', 'auth-snackbar');
+    runInterceptorWithError(new HttpErrorResponse({
+      status: 403, 
+      statusText: 'Forbidden', 
+      error: { message: '⛔ Accès refusé ! Vous n’êtes pas autorisé.' }
+    }), done, '⛔ Accès refusé ! Vous n’êtes pas autorisé.', 'auth-snackbar');
   });
 
   it('✅ devrait afficher un message d\'erreur 404 avec `error-snackbar`', (done) => {
-    runInterceptorWithError({ status: 404 }, done, '❌ Ressource introuvable.', 'error-snackbar');
+    runInterceptorWithError(new HttpErrorResponse({
+      status: 404, 
+      statusText: 'Not Found', 
+      error: { message: '❌ Ressource introuvable.' }
+    }), done, '❌ Ressource introuvable.', 'error-snackbar');
   });
 
   it('✅ devrait afficher un message d\'erreur 500 avec `error-snackbar`', (done) => {
-    runInterceptorWithError({ status: 500 }, done, '💥 Erreur serveur. Veuillez réessayer plus tard.', 'error-snackbar');
+    runInterceptorWithError(new HttpErrorResponse({
+      status: 500, 
+      statusText: 'Internal Server Error', 
+      error: { message: '💥 Erreur serveur. Veuillez réessayer plus tard.' }
+    }), done, '💥 Erreur serveur. Veuillez réessayer plus tard.', 'error-snackbar');
   });
 
   it('✅ devrait afficher un message de connexion impossible avec `network-snackbar`', (done) => {
-    runInterceptorWithError({}, done, '🌍 Connexion impossible. Vérifiez votre réseau.', 'network-snackbar');
+    runInterceptorWithError(new HttpErrorResponse({
+      status: 0, // Erreur réseau
+      statusText: 'Network Error', 
+      error: new ProgressEvent('error')
+    }), done, '🌍 Connexion impossible. Vérifiez votre réseau.', 'network-snackbar');
   });
 
   it('✅ devrait gérer une erreur avec un message personnalisé', (done) => {
-    const customError = { status: 400, error: { message: 'Erreur spécifique' } };
+    const customError = new HttpErrorResponse({
+      status: 400, 
+      statusText: 'Bad Request', 
+      error: { message: 'Erreur spécifique' }
+    });
+
     runInterceptorWithError(customError, done, 'Erreur spécifique', 'warning-snackbar');
   });
-  
+
 });

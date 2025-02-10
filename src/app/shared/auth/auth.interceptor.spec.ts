@@ -1,35 +1,28 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { HttpClient, HttpRequest, HttpHandlerFn, HttpEvent, HttpResponse } from '@angular/common/http';
-import { inject, EnvironmentInjector, runInInjectionContext } from '@angular/core';
+import { HttpRequest, HttpEvent, HttpResponse } from '@angular/common/http';
+import { EnvironmentInjector, runInInjectionContext } from '@angular/core';
 import { authInterceptor } from './auth.interceptor';
 import { AuthService } from './auth.service';
-import { Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 
 describe('authInterceptor', () => {
   let httpMock: HttpTestingController;
-  let httpClient: HttpClient;
   let authService: jasmine.SpyObj<AuthService>;
-  let router: jasmine.SpyObj<Router>;
   let environmentInjector: EnvironmentInjector;
 
   beforeEach(() => {
     const authSpy = jasmine.createSpyObj('AuthService', ['getToken']);
-    const routerSpy = jasmine.createSpyObj('Router', ['navigate']);
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
-        { provide: AuthService, useValue: authSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: AuthService, useValue: authSpy }
       ],
     });
 
     httpMock = TestBed.inject(HttpTestingController);
-    httpClient = TestBed.inject(HttpClient);
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     environmentInjector = TestBed.inject(EnvironmentInjector);
   });
 
@@ -37,10 +30,10 @@ describe('authInterceptor', () => {
     httpMock.verify();
   });
 
-  // Simuler un `HttpHandlerFn`
-  function mockNext(req: HttpRequest<any>): Observable<HttpEvent<any>> {
+ // Simuler un `HttpHandlerFn`
+  function mockNext<T>(req: HttpRequest<T>): Observable<HttpEvent<T>> {
     console.log("✅ mockNext() appelé avec URL :", req.url);
-    return of(new HttpResponse({ status: 200, body: {} }));
+    return of(new HttpResponse<T>({ status: 200, body: null as unknown as T }));
   }
 
   // 🟢 Test : Ajout du token si AuthService retourne un token

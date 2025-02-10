@@ -33,7 +33,8 @@ export class NotificationService {
           console.log("🔄 Auto-reconnexion WebSocket STOMP après rafraîchissement !");
           this.connect();
         }
-      } catch (error) {
+      } catch (_error) {
+        void _error;
         console.warn("⚠️ Impossible d'auto-reconnecter WebSocket, l'injector est détruit.");
       }
     }

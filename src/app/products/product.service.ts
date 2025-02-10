@@ -2,8 +2,6 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product, PaginatedResponse } from './model/product';
-import { catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs'; // Import pour relancer une erreur
 
 @Injectable({
   providedIn: 'root'

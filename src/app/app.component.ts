@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NotificationComponent } from './websocket/notification/notification.component';
@@ -11,7 +11,7 @@ import { NotificationService } from './websocket/notification.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'fronted-angular';
   credentials = { username: '', password: '' };
 

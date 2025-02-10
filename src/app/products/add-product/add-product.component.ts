@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -12,7 +12,7 @@ import { Product } from '../model/product';
   templateUrl: './add-product.component.html',
   styleUrls: ['./add-product.component.css']
 })
-export class AddProductComponent implements OnInit {
+export class AddProductComponent {
   productForm: FormGroup;
   productCreated: Product | undefined = undefined;
   errorMessage: string | null = null;
@@ -23,9 +23,6 @@ export class AddProductComponent implements OnInit {
       price: [0, [Validators.required, Validators.min(1)]],      // 2e argument : validateurs synchrones
       description: ['', [Validators.required, Validators.maxLength(200)]] // 2e argument : validateurs synchrones
     });
-  }
-
-  ngOnInit(): void {
   }
 
   onSubmit(): void {

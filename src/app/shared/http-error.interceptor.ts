@@ -15,7 +15,11 @@ export const HttpErrorInterceptor: HttpInterceptorFn = (req, next) => {
       let errorMessage = error.error?.message || 'Une erreur inattendue s’est produite.';
       let panelClass = 'error-snackbar'; // Style par défaut
 
-      if (error.status !== undefined) {
+      // Vérification explicite des erreurs réseau
+      if (error.status === 0) {
+        errorMessage = '🌍 Connexion impossible. Vérifiez votre réseau.';
+        panelClass = 'network-snackbar';
+      } else if (error.status !== undefined) {
         switch (error.status) {
           case 400:
             errorMessage = errorMessage = error.error?.message || '⚠️ Requête invalide. Vérifiez les informations saisies.';

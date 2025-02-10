@@ -5,6 +5,15 @@ import { catchError, tap } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { Router } from '@angular/router';
 
+interface LoginResponse {
+  token: string;
+  user?: {
+    id: number;
+    username: string;
+    email?: string;
+  };
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,8 +36,8 @@ export class AuthService {
   /**
    * 🔑 Connexion de l'utilisateur
    */
-  login(credentials: { username: string; password: string }): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/login`, credentials).pipe(
+  login(credentials: { username: string; password: string }): Observable<LoginResponse | null> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap(response => {
         if (response && response.token) {
           this.storeToken(response.token);
@@ -41,7 +50,7 @@ export class AuthService {
       })
     );
   }
-
+  
   /**
    * 📌 Stocke le token JWT
    */

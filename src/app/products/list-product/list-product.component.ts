@@ -30,7 +30,6 @@ products = new MatTableDataSource<Product>(); // Source de données pour la tabl
 page = 0;
 size = 5;
 totalElements = 0;
-errorMessage: string = '';
 isHomePage = false;
 
 constructor(

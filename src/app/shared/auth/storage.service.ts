@@ -24,7 +24,7 @@ export class StorageService {
         return localStorage;
       }
     } catch (e) {
-      console.warn('⚠️ localStorage non disponible, basculement vers sessionStorage.');
+      console.warn('⚠️ localStorage non disponible, basculement vers sessionStorage.', e);
     }
 
     try {
@@ -34,7 +34,7 @@ export class StorageService {
         return sessionStorage;
       }
     } catch (e) {
-      console.warn('⚠️ sessionStorage non disponible.');
+      console.warn('⚠️ sessionStorage non disponible.', e);
     }
 
     console.error('❌ Aucun stockage disponible.');

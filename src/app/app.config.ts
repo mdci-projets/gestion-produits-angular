@@ -4,7 +4,6 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
 import { provideNoopAnimations } from '@angular/platform-browser/animations';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { authInterceptor } from './shared/auth/auth.interceptor';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpErrorInterceptor } from './shared/http-error.interceptor';

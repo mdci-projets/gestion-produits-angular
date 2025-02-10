@@ -1,3 +1,4 @@
 import 'zone.js'; // ✅ Angular polyfills requis
 
-(window as any).global = window;
+(window as unknown as { global: Window }).global = window;
+
