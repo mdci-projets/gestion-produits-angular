@@ -45,7 +45,7 @@ jobs:
           start: npm run start  # Démarrer Angular avant les tests
           wait-on: 'http://localhost:4300'  # Attendre que l'application soit prête
           browser: chrome  # Exécuter les tests sur Chrome 
-
+  
   cd:
     name: 🚀 Build & Deploy
     needs: ci
@@ -54,6 +54,30 @@ jobs:
     steps:
       - name: 📂 Checkout du Code
         uses: actions/checkout@v4
+
+      - name: 🔑 Se Connecter à AWS
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: 🌍 Récupérer l'IP Publique de l'EC2
+        id: get-ec2-ip
+        run: |
+          PUBLIC_IP=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=spring-boot-ec2" "Name=instance-state-name,Values=running" \
+            --query "Reservations[0].Instances[0].PublicIpAddress" \
+            --output text)
+
+          echo "PUBLIC_IP=$PUBLIC_IP" >> $GITHUB_ENV
+          echo "🔹 L'IP publique de l'EC2 est : $PUBLIC_IP"
+
+      - name: 🛠️ Modifier `config.json` pour Injecter l'IP du Backend
+        run: |
+          jq '.productsApiUrl = "http://'$PUBLIC_IP':8080"' public/assets/config.json > public/assets/config_tmp.json
+          mv public/assets/config_tmp.json public/assets/config.json
+          echo "✅ URL du Backend injectée : http://$PUBLIC_IP:8080"
 
       - name: 🏗️ Installer Node.js
         uses: actions/setup-node@v4
