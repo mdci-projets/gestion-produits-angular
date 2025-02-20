@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { Router } from '@angular/router';
+import { ConfigService } from '../config.service';
 
 interface LoginResponse {
   token: string;
@@ -18,7 +19,7 @@ interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8080/auth';
+  private apiUrl: string;
   private tokenKey = 'authToken';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
@@ -26,8 +27,10 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private storageService: StorageService,
-    private router: Router
+    private router: Router,
+    private configService: ConfigService
   ) {
+    this.apiUrl = `${this.configService.productsApiUrl}/auth`;
     if (typeof window !== 'undefined') {
       this.refreshAuthState(); // ✅ Vérifie l'authentification uniquement côté client
     }

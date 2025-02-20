@@ -2,14 +2,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product, PaginatedResponse } from './model/product';
+import { ConfigService } from '../shared/config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-private baseUrl = 'http://localhost:8080/api/products';
+private baseUrl: string;
 
-constructor(private http: HttpClient) {}
+constructor(private http: HttpClient, private configService: ConfigService) {
+  this.baseUrl = `${this.configService.productsApiUrl}/api/products`;
+}
 
   // Méthode pour récupérer les produits
   getProducts(page: number, size: number): Observable<PaginatedResponse<Product>> {

@@ -7,11 +7,14 @@ import { provideClientHydration, withEventReplay } from '@angular/platform-brows
 import { authInterceptor } from './shared/auth/auth.interceptor';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpErrorInterceptor } from './shared/http-error.interceptor';
+import { ConfigService } from './shared/config.service';
 
 export const appConfig: ApplicationConfig = {
   providers:
   [
-      provideZoneChangeDetection({ eventCoalescing: true }), provideRouter(routes), provideClientHydration(withEventReplay()),
+      provideZoneChangeDetection({ eventCoalescing: true }),
+      provideRouter(routes),
+      provideClientHydration(withEventReplay()),
       provideHttpClient(
          withInterceptors([
            authInterceptor, // Ajout de l'intercepteur
@@ -19,6 +22,7 @@ export const appConfig: ApplicationConfig = {
          ])
       ),
       MatSnackBarModule, // Import du module pour les notifications
-      provideNoopAnimations()
+      provideNoopAnimations(),
+      ConfigService // Fourniture du service de configuration
   ]
 };

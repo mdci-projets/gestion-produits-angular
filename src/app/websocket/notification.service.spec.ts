@@ -1,6 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { NotificationService } from './notification.service';
 import { AuthService } from '../shared/auth/auth.service';
+import { ConfigService } from '../shared/config.service';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 // ✅ 1️⃣ Mock du STOMP Client
 class MockStompClient {
@@ -15,8 +17,8 @@ class MockStompClient {
     deactivate = jasmine.createSpy('deactivate');
     subscribe = jasmine.createSpy('subscribe').and.returnValue({ unsubscribe: jasmine.createSpy() });
     publish = jasmine.createSpy('publish');
-  }
-  
+}
+
 // ✅ 2️⃣ Mock AuthService
 class MockAuthService {
   getToken = jasmine.createSpy('getToken').and.returnValue('fake-token');
@@ -36,8 +38,10 @@ describe('NotificationService', () => {
     spyOn(console, 'error');
 
     TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule], // ✅ Ajout pour fournir `HttpClient`
       providers: [
         NotificationService,
+        ConfigService, // ✅ Ajout du ConfigService
         { provide: AuthService, useValue: authService },
       ]
     });
@@ -49,9 +53,9 @@ describe('NotificationService', () => {
   });
 
   it('🚨 ne doit pas activer WebSocket si déjà connecté', () => {
-    (service as unknown as { isConnected: boolean }).isConnected = true; // Simule un WebSocket actif    
+    (service as unknown as { isConnected: boolean }).isConnected = true; // Simule un WebSocket actif
     service.connect();
-  
+
     expect(mockStompClient.activate).not.toHaveBeenCalled(); // ❌ Vérifie que `activate()` n'est PAS appelé
     expect(console.log).toHaveBeenCalledWith("🔵 WebSocket STOMP est déjà actif, pas besoin de reconnecter.");
   });
@@ -67,4 +71,3 @@ describe('NotificationService', () => {
     expect(service.socketIsConnected()).toBeFalse(); // Vérifie que l'état est bien `false`
   });
 });
- 

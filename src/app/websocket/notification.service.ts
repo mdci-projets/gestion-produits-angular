@@ -3,20 +3,22 @@ import { Client, Message } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../shared/auth/auth.service';
+import { ConfigService } from '../shared/config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
   private stompClient: Client | null = null;
-  private socketUrl = 'http://localhost:8080/ws'; // WebSocket URL (Backend)
+  private socketUrl: string; // WebSocket URL (Backend)
   private notificationsSubject = new BehaviorSubject<string[]>([]);
   public notifications$ = this.notificationsSubject.asObservable();
 
   private injector = inject(Injector);
   private isConnected = false; // Vérifie si STOMP est déjà connecté
 
-  constructor() {
+  constructor(private configService: ConfigService) {
+    this.socketUrl = `${this.configService.productsApiUrl}/ws`;
     // Vérifier le token et reconnecter STOMP après un rafraîchissement (F5)
     setTimeout(() => {
       this.autoReconnect();
