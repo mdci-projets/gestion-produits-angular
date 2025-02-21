@@ -23,6 +23,10 @@ export class ConfigService {
     }
   }
 
+  getConfig(): Config {
+    return this.config;
+  }
+
   get productsApiUrl(): string {
     return this.config.productsApiUrl || 'http://localhost:8080';
   }

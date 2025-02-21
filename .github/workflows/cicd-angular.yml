@@ -44,8 +44,8 @@ jobs:
         with:
           start: npm run start  # Démarrer Angular avant les tests
           wait-on: 'http://localhost:4300'  # Attendre que l'application soit prête
-          browser: chrome  # Exécuter les tests sur Chrome 
-  
+          browser: chrome  # Exécuter les tests sur Chrome
+
   cd:
     name: 🚀 Build & Deploy
     needs: ci

@@ -3,14 +3,11 @@ import { AppComponent } from './app/app.component';
 import { appConfig } from './app/app.config';
 import { ConfigService } from './app/shared/config.service';
 
-async function loadConfig(configService: ConfigService): Promise<void> {
-  await configService.loadConfig();
+async function main() {
+  const app = await bootstrapApplication(AppComponent, appConfig);
+  const configService = app.injector.get(ConfigService);
+  await configService.loadConfig(); // 🔥 Attendre le chargement de `config.json` avant de continuer
+  console.log("✅ Config chargée :", configService.getConfig());
 }
 
-bootstrapApplication(AppComponent, appConfig)
-  .then(appRef => {
-    const configService = appRef.injector.get(ConfigService);
-    return loadConfig(configService);
-  })
-  .catch(err => console.error(err));
-
+main().catch(err => console.error(err));
