@@ -1,7 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { NotificationService } from './notification.service';
 import { AuthService } from '../shared/auth/auth.service';
-import { ConfigService } from '../shared/config.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 // ✅ 1️⃣ Mock du STOMP Client
@@ -41,7 +40,6 @@ describe('NotificationService', () => {
       imports: [HttpClientTestingModule], // ✅ Ajout pour fournir `HttpClient`
       providers: [
         NotificationService,
-        ConfigService, // ✅ Ajout du ConfigService
         { provide: AuthService, useValue: authService },
       ]
     });

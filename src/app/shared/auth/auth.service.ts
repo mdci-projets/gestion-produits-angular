@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { StorageService } from './storage.service';
 import { Router } from '@angular/router';
-import { ConfigService } from '../config.service';
+import { environment } from '../../../environments/environment';
 
 interface LoginResponse {
   token: string;
@@ -19,7 +19,7 @@ interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl: string;
+  private apiUrl: string = environment.productsApiUrl;
   private tokenKey = 'authToken';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
@@ -27,12 +27,11 @@ export class AuthService {
   constructor(
     private http: HttpClient,
     private storageService: StorageService,
-    private router: Router,
-    private configService: ConfigService
+    private router: Router
   ) {
-    this.apiUrl = `${this.configService.productsApiUrl}/auth`;
+
     if (typeof window !== 'undefined') {
-      this.refreshAuthState(); // ✅ Vérifie l'authentification uniquement côté client
+      this.refreshAuthState();
     }
   }
 
@@ -40,7 +39,7 @@ export class AuthService {
    * 🔑 Connexion de l'utilisateur
    */
   login(credentials: { username: string; password: string }): Observable<LoginResponse | null> {
-    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
+    return this.http.post<LoginResponse>(`${this.apiUrl}/auth/login`, credentials).pipe(
       tap(response => {
         if (response && response.token) {
           this.storeToken(response.token);
@@ -53,7 +52,7 @@ export class AuthService {
       })
     );
   }
-  
+
   /**
    * 📌 Stocke le token JWT
    */
