@@ -8,7 +8,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-   const excludedRoutes = ['/login', '/register'];
+   const excludedRoutes = ['/login', '/register', '/assets/config.json'];
     if (excludedRoutes.some((url) => req.url.includes(url))) {
       return next(req); // Ignorer l'intercepteur pour ces routes
     }
@@ -22,6 +22,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
      });
    } else {
      console.warn('Interceptor - No token found, request sent without Authorization');
+     console.warn(req.url);
    }
 
    return next(req).pipe(

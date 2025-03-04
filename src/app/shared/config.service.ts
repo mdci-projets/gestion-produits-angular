@@ -1,6 +1,4 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { lastValueFrom } from 'rxjs';
 
 interface Config {
   productsApiUrl: string;
@@ -10,21 +8,23 @@ interface Config {
   providedIn: 'root'
 })
 export class ConfigService {
-  private config: Config = { productsApiUrl: '' };  // Stocke la configuration
-  constructor(private http: HttpClient) {}
+  private config: Config = { productsApiUrl: '' };
 
   async loadConfig(): Promise<void> {
+    console.time('loadConfig');
     try {
-      this.config = await lastValueFrom(this.http.get<Config>('/assets/config.json'));
-      console.log('✅ Config chargée :', this.config);
+      const response = await fetch('/gestion-produits-angular/assets/config.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      this.config = await response.json();
+      console.timeEnd('loadConfig');
+      console.log('Config chargée :', this.config);
     } catch (error) {
+      console.timeEnd('loadConfig');
       console.warn('⚠️ Impossible de charger config.json, utilisation de la valeur par défaut :', error);
       this.config = { productsApiUrl: 'http://localhost:8080' };
     }
-  }
-
-  getConfig(): Config {
-    return this.config;
   }
 
   get productsApiUrl(): string {

@@ -4,6 +4,7 @@ import SockJS from 'sockjs-client';
 import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../shared/auth/auth.service';
 import { ConfigService } from '../shared/config.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -18,7 +19,7 @@ export class NotificationService {
   private isConnected = false; // Vérifie si STOMP est déjà connecté
 
   constructor(private configService: ConfigService) {
-    this.socketUrl = `${this.configService.productsApiUrl}/ws`;
+    this.socketUrl = `${environment.productsApiUrl}/ws`;
     // Vérifier le token et reconnecter STOMP après un rafraîchissement (F5)
     setTimeout(() => {
       this.autoReconnect();
