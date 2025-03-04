@@ -16,7 +16,7 @@
             "allowedCommonJsDependencies": [
                 "sockjs-client"
             ],
-            "outputPath": "dist/fronted-angular",
+            "outputPath": "dist/gestion-produits-angular",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [

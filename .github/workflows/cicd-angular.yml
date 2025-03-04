@@ -88,12 +88,12 @@ jobs:
         run: npm ci
 
       - name: 🏗️ Construire l'Application
-        run: npm run build -- --configuration=production
+        run: npm run build -- --configuration=production --base-href /gestion-produits-angular/
 
       - name: 🚀 Déploiement sur GitHub Pages
         if: success()
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: dist/fronted-angular/browser
-          clean: true
+          folder: dist/gestion-produits-angular/browser
+          clean: true          
