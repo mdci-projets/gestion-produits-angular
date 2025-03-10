@@ -3,6 +3,11 @@ import { CommonModule}from '@angular/common';
 import { Subscription } from 'rxjs';
 import { NotificationService } from '../notification.service';
 
+interface NotificationMessage {
+  message: string;
+  timestamp: Date;
+}
+
 @Component({
   selector: 'app-notification',
   imports: [
@@ -12,7 +17,7 @@ import { NotificationService } from '../notification.service';
   styleUrls: ['./notification.component.css']
 })
 export class NotificationComponent implements OnInit, OnDestroy {
-  notifications: string[] = [];
+  messages: NotificationMessage[] = [];
   private notificationSubscription!: Subscription;
 
   constructor(private notificationService: NotificationService) {}
@@ -20,9 +25,17 @@ export class NotificationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.notificationSubscription = this.notificationService.notifications$.subscribe(
       (notifications) => {
-        this.notifications = notifications;
-      }
-    );
+        this.messages = [...notifications];
+        this.scheduleHideMessages();
+    });
+  }
+
+  private scheduleHideMessages(): void {
+      setTimeout(() => {
+        if (this.messages.length > 0) {
+          this.messages.pop();
+        }
+      }, 5000);
   }
 
   ngOnDestroy(): void {

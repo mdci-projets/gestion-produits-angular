@@ -5,13 +5,19 @@ import { BehaviorSubject } from 'rxjs';
 import { AuthService } from '../shared/auth/auth.service';
 import { environment } from '../../environments/environment';
 
+interface NotificationMessage {
+  message: string;
+  timestamp: Date;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
   private stompClient: Client | null = null;
   private socketUrl: string; // WebSocket URL (Backend)
-  private notificationsSubject = new BehaviorSubject<string[]>([]);
+  private messages: NotificationMessage[] = [];
+  private notificationsSubject = new BehaviorSubject<NotificationMessage[]>([]);
   public notifications$ = this.notificationsSubject.asObservable();
 
   private injector = inject(Injector);
@@ -30,7 +36,7 @@ export class NotificationService {
       try {
         const authService = this.injector.get(AuthService);
         const token = authService.getToken();
-  
+
         if (token) {
           console.log("🔄 Auto-reconnexion WebSocket STOMP après rafraîchissement !");
           this.connect();
@@ -58,22 +64,18 @@ export class NotificationService {
       return;
     }
 
-    console.log("✅ Token trouvé, activation du WebSocket STOMP...");
-
     const socket = new SockJS(this.socketUrl);
-    
+
     this.stompClient = new Client({
       webSocketFactory: () => socket,
       connectHeaders: {
         Authorization: `Bearer ${token}`
       },
-      debug: (str) => console.log(`STOMP Debug: ${str}`),
       reconnectDelay: 5000 // Tentative de reconnexion automatique
     });
 
     this.stompClient.onConnect = () => {
-      console.log('✅ Connecté au WebSocket STOMP !');
-      this.isConnected = true; // Marquer comme connecté
+      this.isConnected = true;
 
       // Écoute des notifications
       this.stompClient?.subscribe('/topic/products', (message: Message) => {
@@ -86,14 +88,11 @@ export class NotificationService {
       console.error('❌ Erreur STOMP:', frame);
     };
 
-
-
-
     if (!this.stompClient) {
       console.error("❌ STOMP Client is not initialized.");
       return;
     }
-  
+
     if (this.stompClient.active) {
       console.warn("⚠️ STOMP Client is already connected.");
       return;
@@ -102,9 +101,22 @@ export class NotificationService {
     this.stompClient.activate();
   }
 
-  private addNotification(notification: string) {
-    const currentNotifications = this.notificationsSubject.value;
-    this.notificationsSubject.next([...currentNotifications, notification]);
+  private addNotification(notification: string): void {
+    const newMessage: NotificationMessage = {
+          message: notification,
+          timestamp: new Date()
+    };
+
+    // Ajouter le message en début de liste et conserver les 5 derniers
+    this.messages.unshift(newMessage);
+    if (this.messages.length > 2) {
+       this.messages.pop();
+    }
+
+    // Mettre à jour l'observable
+    this.notificationsSubject.next([...this.messages]);
+    /* const currentNotifications = this.notificationsSubject.value;
+    this.notificationsSubject.next([...currentNotifications, notification]); */
   }
 
   disconnect() {

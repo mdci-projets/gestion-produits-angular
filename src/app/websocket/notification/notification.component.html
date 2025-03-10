@@ -1,9 +1,8 @@
 <div class="notification-container">
-  <h3>🔔 Notifications</h3>
-  <ul *ngIf="notifications.length > 0">
-    <li *ngFor="let notification of notifications">
-      {{ notification }}
-    </li>
-  </ul>
-  <p *ngIf="notifications.length === 0">Aucune notification pour l'instant.</p>
+  <div *ngFor="let msg of messages; let i = index" class="notification" [class.fade-out]="i === messages.length - 1">
+    <span class="timestamp">{{ msg.timestamp | date:'shortTime' }}</span>
+    <span class="message">{{ msg.message }}</span>
+
+    <p *ngIf="messages !== undefined && messages.length === 0">Aucune notification pour l'instant.</p>
+  </div>
 </div>
