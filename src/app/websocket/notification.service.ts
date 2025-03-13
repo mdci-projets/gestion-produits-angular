@@ -15,7 +15,7 @@ interface NotificationMessage {
 })
 export class NotificationService {
   private stompClient: Client | null = null;
-  private socketUrl: string; // WebSocket URL (Backend)
+  private socketUrl: string;
   private messages: NotificationMessage[] = [];
   private notificationsSubject = new BehaviorSubject<NotificationMessage[]>([]);
   public notifications$ = this.notificationsSubject.asObservable();
@@ -24,7 +24,11 @@ export class NotificationService {
   private isConnected = false; // Vérifie si STOMP est déjà connecté
 
   constructor() {
-    this.socketUrl = `${environment.productsApiUrl}/ws`;
+     //this.socketUrl = `${environment.productsApiUrl}/ws`;
+    const protocol = environment.production ? 'https://' : 'http://';
+    const domain = environment.production ? 'gestion-produits-backend.mdci-consulting.fr' : 'localhost:8080';
+    this.socketUrl = `${protocol}${domain}/ws`;
+
     // Vérifier le token et reconnecter STOMP après un rafraîchissement (F5)
     setTimeout(() => {
       this.autoReconnect();
@@ -64,39 +68,33 @@ export class NotificationService {
       return;
     }
 
-    const socket = new SockJS(this.socketUrl);
+    // Ajouter le token dans l'URL pour l'authentification
+    // const socket = new SockJS(`${this.socketUrl}?token=${token}`);
+    const socket = new SockJS(`${this.socketUrl}?token=${token}`);
 
     this.stompClient = new Client({
       webSocketFactory: () => socket,
+      reconnectDelay: 5000, // Tentative de reconnexion automatique
       connectHeaders: {
-        Authorization: `Bearer ${token}`
+         Authorization: `Bearer ${token}`,  // En-tête d'autorisation
       },
-      reconnectDelay: 5000 // Tentative de reconnexion automatique
     });
 
     this.stompClient.onConnect = () => {
       this.isConnected = true;
 
-      // Écoute des notifications
+      // Écoute des notifications WebSocket
       this.stompClient?.subscribe('/topic/products', (message: Message) => {
         const notification = JSON.parse(message.body).message;
         this.addNotification(notification);
       });
+
+      console.log("✅ WebSocket STOMP connecté !");
     };
 
     this.stompClient.onStompError = (frame) => {
       console.error('❌ Erreur STOMP:', frame);
     };
-
-    if (!this.stompClient) {
-      console.error("❌ STOMP Client is not initialized.");
-      return;
-    }
-
-    if (this.stompClient.active) {
-      console.warn("⚠️ STOMP Client is already connected.");
-      return;
-    }
 
     this.stompClient.activate();
   }
@@ -115,8 +113,6 @@ export class NotificationService {
 
     // Mettre à jour l'observable
     this.notificationsSubject.next([...this.messages]);
-    /* const currentNotifications = this.notificationsSubject.value;
-    this.notificationsSubject.next([...currentNotifications, notification]); */
   }
 
   disconnect() {
