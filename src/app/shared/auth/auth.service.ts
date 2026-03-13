@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
@@ -19,17 +19,16 @@ interface LoginResponse {
   providedIn: 'root'
 })
 export class AuthService {
+  private http = inject(HttpClient);
+  private storageService = inject(StorageService);
+  private router = inject(Router);
+
   private apiUrl: string = environment.productsApiUrl;
   private tokenKey = 'authToken';
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
 
-  constructor(
-    private http: HttpClient,
-    private storageService: StorageService,
-    private router: Router
-  ) {
-
+  constructor() {
     if (typeof window !== 'undefined') {
       this.refreshAuthState();
     }

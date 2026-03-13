@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NotificationComponent } from './websocket/notification/notification.component';
@@ -15,7 +15,8 @@ export class AppComponent implements OnInit {
   title = 'fronted-angular';
   credentials = { username: '', password: '' };
 
-  constructor(private authService: AuthService, private notificationService: NotificationService) {}
+  private authService = inject(AuthService);
+  private notificationService = inject(NotificationService);
 
   ngOnInit(): void {
     // Si l'utilisateur est déjà connecté, démarrer WebSocket immédiatement

@@ -1,4 +1,4 @@
-import {Component, OnInit} from'@angular/core';
+import {Component, OnInit, inject} from'@angular/core';
 import { ProductService } from '../product.service';
 import { Product } from '../model/product';
 import { CommonModule } from '@angular/common';
@@ -25,19 +25,17 @@ styleUrls: ['./list-product.component.css']
 })
 export class ListProductComponent implements OnInit {
 
+private productService = inject(ProductService);
+private router = inject(Router);
+private route = inject(ActivatedRoute);
+private authService = inject(AuthService);
+
 displayedColumns: string[] = ['name', 'price', 'description', 'actions']; // Colonnes affichées
 products = new MatTableDataSource<Product>(); // Source de données pour la table
 page = 0;
 size = 5;
 totalElements = 0;
 isHomePage = false;
-
-constructor(
-    private productService: ProductService,
-    private router: Router,
-    private route: ActivatedRoute,
-    private authService: AuthService
-) {}
 
    ngOnInit(): void {
 

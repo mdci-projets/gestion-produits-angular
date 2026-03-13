@@ -1,4 +1,4 @@
-import{Component}from'@angular/core';
+import{Component, inject}from'@angular/core';
 import {Router, ActivatedRoute }from '@angular/router';
 import { CommonModule}from '@angular/common';
 import {FormsModule}from '@angular/forms';
@@ -24,16 +24,14 @@ MatSnackBarModule
 ]
 })
 export class LoginComponent {
+private authService = inject(AuthService);
+private router = inject(Router);
+private route = inject(ActivatedRoute);
+private notificationService = inject(NotificationService);
+private snackBar = inject(MatSnackBar);
+
 credentials = { username: '', password: '' };
 error: string | null = null;
-
-constructor(
-        private authService: AuthService,
-        private router: Router,
-        private route: ActivatedRoute,
-        private notificationService: NotificationService,
-        private snackBar: MatSnackBar
-) {}
 
   login(): void {
     const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';

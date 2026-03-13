@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -13,11 +13,15 @@ import { Product } from '../model/product';
   styleUrls: ['./add-product.component.css']
 })
 export class AddProductComponent {
+  private fb = inject(FormBuilder);
+  private productService = inject(ProductService);
+  private router = inject(Router);
+
   productForm: FormGroup;
   productCreated: Product | undefined = undefined;
   errorMessage: string | null = null;
 
-  constructor(private fb: FormBuilder, private productService: ProductService, private router: Router ) {
+  constructor() {
     this.productForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]], // 2e argument : validateurs synchrones
       price: [0, [Validators.required, Validators.min(1)]],      // 2e argument : validateurs synchrones

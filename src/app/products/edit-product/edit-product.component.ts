@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,10 +22,12 @@ import { Product } from '../model/product';
 })
 export class EditProductComponent implements OnInit {
 
+  private route = inject(ActivatedRoute);
+  router = inject(Router);
+  private productService = inject(ProductService);
+
   product!: Product; // Le produit à éditer
   isLoading = true;  // Indicateur de chargement
-
-  constructor(private route: ActivatedRoute, public router: Router, private productService: ProductService){}
 
   ngOnInit(): void {
     // Récupérer l'ID du produit à partir des paramètres de la route

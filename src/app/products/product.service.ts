@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Product, PaginatedResponse } from './model/product';
@@ -9,8 +9,7 @@ import { environment } from '../../environments/environment';
 })
 export class ProductService {
 private apiUrl: string = environment.productsApiUrl;
-
-constructor(private http: HttpClient) {}
+private http = inject(HttpClient);
 
   // Méthode pour récupérer les produits
   getProducts(page: number, size: number): Observable<PaginatedResponse<Product>> {
