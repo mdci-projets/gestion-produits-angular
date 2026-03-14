@@ -2,10 +2,8 @@ describe('Liste des Produits - Test E2E avec Cypress et Angular Material MDC', (
     beforeEach(() => {
       // 1️⃣ Mock un faux token JWT bien formaté (Sans backend)
       const fakeToken = `${btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }))}.${btoa(JSON.stringify({ exp: Math.floor(Date.now() / 1000) + 3600, sub: "test-user" }))}.fake-signature`;
-      // 2️⃣ Simule l'authentification
-      localStorage.setItem('authToken', JSON.stringify({token: fakeToken}));
-  
-      // 3️⃣ Mock API : Intercepter et simuler la réponse de l'API des produits
+
+      // 2️⃣ Mock API : Intercepter et simuler la réponse de l'API des produits
       cy.intercept('GET', '**/api/products*', {
         statusCode: 200,
         delay: 500, // Simule une latence réseau
@@ -23,9 +21,13 @@ describe('Liste des Produits - Test E2E avec Cypress et Angular Material MDC', (
           size: 5
         },
       }).as('getProducts');
-  
-      // 4️⃣ Visiter la page des produits
-      cy.visit('/products');
+
+      // 3️⃣ Visiter la page des produits en injectant le token avant le chargement de l'app
+      cy.visit('/products', {
+        onBeforeLoad(win) {
+          win.localStorage.setItem('authToken', JSON.stringify({ token: fakeToken }));
+        }
+      });
   
       // 5️⃣ Attendre que la requête des produits soit bien reçue
       cy.wait('@getProducts', { timeout: 5000 });
